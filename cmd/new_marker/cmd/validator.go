@@ -174,10 +174,10 @@ func (v *Validator) LockedMAP(_ *cli.Context, cfg *define.Config) error {
 }
 
 /*
-	AuthorizeValidatorSigner
-	note:account function before become to be a validator
-	signer sign account
-	need signer private
+AuthorizeValidatorSigner
+note:account function before become to be a validator
+signer sign account
+need signer private
 */
 func (v *Validator) AuthorizeValidatorSigner(_ *cli.Context, cfg *define.Config) error {
 	SignatureStr, signer := v.makeECDSASignatureFromSigner_(cfg.From, cfg.SignerPriv) // signer sign account
@@ -207,6 +207,40 @@ func (v *Validator) AuthorizeValidatorSignerBySignature(_ *cli.Context, cfg *def
 
 	log.Info("authorizeValidatorSignerBySignature", "signer", cfg.SignerAddress, "signature", cfg.Signature)
 	v.handleType1Msg(cfg, v.account.to, nil, v.account.abi, "authorizeValidatorSigner", cfg.SignerAddress, all, r, s)
+	return nil
+}
+
+func (v *Validator) UpdateValidatorSigner(_ *cli.Context, cfg *define.Config) error {
+	SignatureStr, signer := v.makeECDSASignatureFromSigner_(cfg.From, cfg.SignerPriv)
+	Signature, err := hexutil.Decode(SignatureStr)
+	if err != nil {
+		panic(err)
+	}
+	all := uint8(new(big.Int).SetBytes([]byte{Signature[64] + 27}).Uint64())
+	r := common.BytesToHash(Signature[:32])
+	s := common.BytesToHash(Signature[32:64])
+
+	privateKey, err := crypto.ToECDSA(common.FromHex(cfg.SignerPriv))
+	if err != nil {
+		panic(err)
+	}
+	publicAddr := crypto.PubkeyToAddress(privateKey.PublicKey)
+	_account := &account.Account{Address: publicAddr, PrivateKey: privateKey}
+	blsPublicKey, err := _account.BLSPublicKey()
+	if err != nil {
+		panic(err)
+	}
+	blsG1PublicKey, err := _account.BLSG1PublicKey()
+	if err != nil {
+		panic(err)
+	}
+	ecdsaPublicKey := _account.PublicKey()
+	blsPop := v.makeBLSProofOfPossessionFromSigner_(cfg.From, cfg.SignerPriv).Marshal()
+
+	logger := log.New("func", "UpdateValidatorSigner")
+	logger.Info("UpdateValidatorSigner", "account", cfg.From, "signer", signer)
+	v.handleType1Msg(cfg, v.account.to, nil, v.account.abi, "authorizeValidatorSignerWithKeys",
+		signer, all, r, s, ecdsaPublicKey[1:], blsPublicKey[:], blsG1PublicKey[:], blsPop[:])
 	return nil
 }
 

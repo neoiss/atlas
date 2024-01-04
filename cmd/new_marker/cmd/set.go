@@ -136,6 +136,12 @@ func init() {
 			Flags:  append(define.MustFlagCombination, define.SignatureFlag, define.SignerFlag),
 		},
 		{
+			Name:   "updateValidatorSigner",
+			Usage:  "Update signer account of validator.",
+			Action: MigrateFlags(validator.UpdateValidatorSigner),
+			Flags:  append(define.MustFlagCombination, define.SignerPriFlag),
+		},
+		{
 			Name:   "makeECDSASignatureFromSigner",
 			Usage:  "Print a ECDSASignature that signer sign the account(validator)",
 			Action: MigrateFlags(validator.MakeECDSASignatureFromSigner),
