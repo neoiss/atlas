@@ -78,7 +78,7 @@ var Defaults = Config{
 	RPCGasCap:     50000000,
 	RPCEVMTimeout: 5 * time.Second,
 	GPO:           FullNodeGPO,
-	RPCTxFeeCap:   10, // 10 ether
+	RPCTxFeeCap:   50, // 10 ether
 	Istanbul:      *istanbul.DefaultConfig,
 }
 
@@ -121,8 +121,9 @@ type Config struct {
 	SnapDiscoveryURLs []string
 	//DiscoveryURLs     []string
 
-	NoPruning  bool // Whether to disable pruning and flush everything to disk
-	NoPrefetch bool // Whether to disable prefetching and only load state on demand
+	NoPruning        bool // Whether to disable pruning and flush everything to disk
+	NoPrefetch       bool // Whether to disable prefetching and only load state on demand
+	VerifyCheckPoint bool `toml:",omitempty"`
 
 	TxLookupLimit uint64 `toml:",omitempty"` // The maximum number of blocks from head whose tx indices are reserved.
 
