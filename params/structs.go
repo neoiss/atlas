@@ -103,6 +103,7 @@ type ChainConfig struct {
 	DeregisterBlock   *big.Int `json:"deregisterblock,omitempty"`
 	CalcBaseBlock     *big.Int `json:"calcbaseblock,omitempty"`
 	MAIBlock          *big.Int `json:"maiBlock,omitempty"` // MAI switch block (nil = no fork, 0 = already on shanghai)
+	TSSBlock          *big.Int `json:"tssBlock,omitempty"`
 	// This does not belong here but passing it to every function is not possible since that breaks
 	// some implemented interfaces and introduces churn across the geth codebase.
 	FullHeaderChainAvailable bool // False for lightest Sync mode, true otherwise
@@ -158,7 +159,7 @@ func (c *ChainConfig) String() string {
 	default:
 		engine = "unknown"
 	}
-	return fmt.Sprintf("{ChainID: %v Homestead: %v DAO: %v DAOSupport: %v EIP150: %v EIP155: %v EIP158: %v BN256Fork: %v Byzantium: %v Constantinople: %v Petersburg: %v Istanbul: %v, Muir Glacier: %v, Berlin: %v, London: %v, Reward: %v, Deregister: %v, Calc: %v, MAI: %v, Engine: %v}",
+	return fmt.Sprintf("{ChainID: %v Homestead: %v DAO: %v DAOSupport: %v EIP150: %v EIP155: %v EIP158: %v BN256Fork: %v Byzantium: %v Constantinople: %v Petersburg: %v Istanbul: %v, Muir Glacier: %v, Berlin: %v, London: %v, Reward: %v, Deregister: %v, Calc: %v, MAI: %v, TSS: %v, Engine: %v}",
 		c.ChainID,
 		c.HomesteadBlock,
 		c.DAOForkBlock,
@@ -178,6 +179,7 @@ func (c *ChainConfig) String() string {
 		c.DeregisterBlock,
 		c.CalcBaseBlock,
 		c.MAIBlock,
+		c.TSSBlock,
 		engine,
 	)
 }
@@ -265,6 +267,10 @@ func (c *ChainConfig) IsCalc(num *big.Int) bool {
 // IsMAI returns whether num is either equal to the MAI fork block or greater.
 func (c *ChainConfig) IsMAI(num *big.Int) bool {
 	return isForked(c.MAIBlock, num)
+}
+
+func (c *ChainConfig) IsTSS(num *big.Int) bool {
+	return isForked(c.TSSBlock, num)
 }
 
 // CheckCompatible checks whether scheduled fork transitions have been imported

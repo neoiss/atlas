@@ -21,6 +21,7 @@ var (
 	Random               *abi.ABI = mustParseAbi("Random", RandomStr)
 	Validators           *abi.ABI = mustParseAbi("Validators", ValidatorsStr)
 	Accounts             *abi.ABI = mustParseAbi("Accounts", AccountsStr)
+	Maintainer           *abi.ABI = mustParseAbi("Maintainer", MaintainerStr)
 )
 
 func mustParseAbi(name, abiStr string) *abi.ABI {

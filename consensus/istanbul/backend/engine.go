@@ -35,6 +35,7 @@ import (
 	"github.com/mapprotocol/atlas/consensus/istanbul/validator"
 	"github.com/mapprotocol/atlas/consensus/misc"
 	"github.com/mapprotocol/atlas/contracts/blockchain_parameters"
+	"github.com/mapprotocol/atlas/contracts/maintainer"
 	ethCore "github.com/mapprotocol/atlas/core"
 	ethChain "github.com/mapprotocol/atlas/core/chain"
 	"github.com/mapprotocol/atlas/core/state"
@@ -49,6 +50,7 @@ const (
 	inmemoryPeers                 = 40
 	inmemoryMessages              = 1024
 	mobileAllowedClockSkew uint64 = 5
+	OrchestrateStepSize           = 10
 )
 
 var (
@@ -517,6 +519,16 @@ func (sb *Backend) Finalize(chain consensus.ChainHeaderReader, header *types.Hea
 		if err != nil {
 			sb.logger.Error("Failed to distribute epoch rewards", "blockNumber", header.Number, "err", err)
 			state.RevertToSnapshot(snapshot)
+		}
+	} else {
+		snapshot = state.Snapshot()
+		if chain.Config().IsTSS(header.Number) && header.Number.Uint64()%OrchestrateStepSize == 0 {
+			if err := maintainer.Orchestrate(vmRunner); err != nil {
+				sb.logger.Error("Failed to orchestrate", "blockNumber", header.Number, "err", err)
+				state.RevertToSnapshot(snapshot)
+			} else {
+				sb.logger.Info("Orchestrate", "blockNumber", header.Number)
+			}
 		}
 	}
 

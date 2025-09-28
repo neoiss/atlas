@@ -8454,3 +8454,13 @@ const AccountsStr = `[
       "type": "function"
     }
   ]`
+
+const MaintainerStr = `[
+  {
+    "inputs": [],
+    "name": "orchestrate",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]`

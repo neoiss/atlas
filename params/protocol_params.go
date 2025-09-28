@@ -49,6 +49,7 @@ const (
 	MaxGasForIsReserveLow                          uint64 = 1 * million
 	MaxGasForGetCommunityPartnerSettingPartner     uint64 = 100 * thousand
 	MaxGasForGetMgrMaintainerAddress               uint64 = 100 * thousand
+	MaxGasForOrchestrate                           uint64 = 5000 * million
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	CallValueTransferGas uint64 = 9000  // Paid for CALL when the value transfer is non-zero.

@@ -3,6 +3,7 @@ package contracts
 import (
 	"bytes"
 	"errors"
+	"github.com/ethereum/go-ethereum/log"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -48,6 +49,7 @@ func resolveAddressForCall(caller vm.EVMRunner, registryId common.Hash, method s
 		//} else {
 		//	log.Error("Error in getting registered address", "function", method, "registryId", hexRegistryId, "err", err)
 		//}
+		log.Error("failed to get registered address", "registryId", registryId, "error", err.Error())
 		return common.BytesToAddress([]byte{}), err
 	}
 	return contractAddress, nil
